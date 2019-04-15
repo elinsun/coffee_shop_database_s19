@@ -1,0 +1,16 @@
+
+{% if session['logged_in'] %}
+<p>You're logged in already!</p>
+{% else %}
+<h2>Login</h2>
+<form action="/signin" method="POST">
+  <input type="email" name="email" placeholder="Email">
+  <input type="password" name="password" placeholder="Password">
+  <input type="submit" value="Log in">
+</form>
+
+<a href="/signup" class="txt1">
+	no account?
+</a>
+
+{% endif %}
