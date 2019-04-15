@@ -1,8 +1,6 @@
 # coffee_shop_database_s19
 4111 Database Project 1
 
--- Description
-
 EasyOrder is a web application designed for chain coffee shops to expedite the order management, bookkeeping and record maintaining. 
 - Users include customers and staffs of the coffee shop. 
 - Customers are able to track past purchases and reviews by registering a personal account. Customer will get rewards as they purchase. Once logging in, they can browse the designated menu for each coffee shop and corresponding prices. 
