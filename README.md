@@ -8,3 +8,8 @@ EasyOrder is a web application designed for chain coffee shops to expedite the o
 - Staffs of different branches are given different authorization to the data and information stored by EasyOrder based on their positions. Servers are able to view the details about new orders. 
 - Managers are given access to edit and customize the menu for their own stores. They can also retrieve the inventory stock and transaction record for bookkeeping purpose. 
 - Data are made up for this project but in reality, data will be based on real transaction and other managerial activities.
+
+
+
+- •	Linxiuzhi Yang (ly2465), Yilin Sun(ys2780)
+- •	URL: http://34.73.16.9:8111/
