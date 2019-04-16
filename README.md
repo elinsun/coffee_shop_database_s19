@@ -1,5 +1,5 @@
 # coffee_shop_database_s19
-4111 Database Project 1
+4111 Database Project 1, Spring 2019
 
 #### Project Description
 EasyOrder is a web application designed for chain coffee shops to expedite the order management, bookkeeping and record maintaining. 
