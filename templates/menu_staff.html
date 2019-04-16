@@ -45,42 +45,68 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Menu <span class="sr-only">(current)</span></a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/menu_staff">Menu</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="/orders">Orders<span class="sr-only"></span></a>
+        </li>
+        {% if session['type'] == 'store manager' %}
+        <li class="nav-item active">
+            <a class="nav-link" href="/employee">Employee<span class="sr-only"></span></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="/summary">Summary<span class="sr-only"></span></a>
+        </li>
+        {% endif %}
+      </ul>
+      {% if not session['logged_in'] %}
+      <li class="sign_in">
+        <a class="sign_in" href="/signin">Sign In</a>
       </li>
-      <li class="nav-item active">
-          <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
+      {% else %}
+      <a class="navbar-brand">Hi, {{username}}</a>
+      <li class="log_out"></li>
+        <a href="/logout">Logout</a> 
       </li>
-      <li class="nav-item active">
-          <a class="nav-link" href="/orders">Orders<span class="sr-only"></span></a>
-      </li>
-      <li class="nav-item active">
-          <a class="nav-link" href="/employee">Employee<span class="sr-only"></span></a>
-      </li>
-      <li class="nav-item active">
-          <a class="nav-link" href="/summary">Summary<span class="sr-only"></span></a>
-      </li>
-    </ul>
-  </div>
-</nav>
+      {% endif %}
+    </div>
+  </nav>
 
 
 <main role="main" class="container">
     
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Restaurant A Menu</h1>
-            <!-- <div class="btn-toolbar mb-2 mb-md-0">
-              <div class="btn-group mr-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-              </div>
-              <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-              </button> -->
-            </div>
+              <h1 class="h2">Menu</h1>
+              <div class="table-responsive">
+                  <table class="table table-striped table-sm" id="menu">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                      </tr>
+                      <tbody>
+                        <form action="/menu_staff" method="POST">
+                        {% for item in menu_data %}
+                        <tr>
+                          <td>{{item.itemname}}</td>
+                          <td>{{item.price}}</td>  
+                          <td> <input type="number" name={{item.itemid}} min="1" max="50"> </td>
+                        </tr>
+                        {% endfor %}
+                        <input type="submit" value="order">
+                        </form>
+                      </tbody>
+                    </thead>
+                  </table>
+                </div>
+    
           </div>
     
           <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>

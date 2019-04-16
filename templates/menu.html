@@ -82,15 +82,20 @@
                   <tr>
                     <th>Name</th>
                     <th>Price</th>
+                    <th>Quantity</th>>
                   </tr>
                   <tbody>
-                    {% for item in menu_data %}
-                    <tr>
-                      <td>{{item.itemname}}</td>
-                      <td>{{item.price}}</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
+                      <form action="/menu" method="POST">
+                      {% for item in menu_data %}
+                      <tr>
+                        <td>{{item.itemname}}</td>
+                        <td>{{item.price}}</td>  
+                        <td> <input type="number" name={{item.itemid}} min="1" max="50"> </td>
+                      </tr>
+                      {% endfor %}
+                      <input type="submit" value="order">
+                      </form>
+                    </tbody>
                 </thead>
               </table>
             </div>

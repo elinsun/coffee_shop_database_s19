@@ -47,7 +47,7 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="/menu">Menu</a>
+          <a class="nav-link" href="/menu_staff">Menu</a>
         </li>
         <li class="nav-item active">
             <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
@@ -69,9 +69,7 @@
         <a class="sign_in" href="/signin">Sign In</a>
       </li>
       {% else %}
-      {% for n in username%}
-        <a class="navbar-brand">Hi, {{n}}</a>
-      {% endfor %}
+      <a class="navbar-brand">Hi, {{username}}</a>
       <li class="log_out"></li>
         <a href="/logout">Logout</a> 
       </li>

@@ -69,9 +69,7 @@
         <a class="sign_in" href="/signin">Sign In</a>
       </li>
       {% else %}
-      {% for n in username%}
-        <a class="navbar-brand">Hi, {{n}}</a>
-      {% endfor %}
+      <a class="navbar-brand">Hi, {{username}}</a>
       <li class="log_out"></li>
         <a href="/logout">Logout</a> 
       </li>
