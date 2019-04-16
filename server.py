@@ -26,45 +26,21 @@ app = Flask(__name__, template_folder=tmpl_dir)
 app.secret_key = os.urandom(24)
 
 
-# XXX: The Database URI should be in the format of:
-#
+# XXX: The Database URI should be in the format of: 
 #     postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
-#
-# For example, if you had username ewu2493, password foobar, then the following line would be:
-#
-#     DATABASEURI = "postgresql://ewu2493:foobar@<IP_OF_POSTGRE_SQL_SERVER>/postgres"
-#
-# For your convenience, we already set it to the class database
 
-# Use the DB credentials you received by e-mail
 DB_USER = "ys2780"
 DB_PASSWORD = "px1YI73YHb"
-
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
-
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
 
-
-#
 # This line creates a database engine that knows how to connect to the URI above
-#
 engine = create_engine(DATABASEURI)
-
-
-# Here we create a test table and insert some values in it
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
-
-
 
 @app.before_request
 def before_request():
   """
-  This function is run at the beginning of every web request
+  This function is run at the beginning of every web request 
   (every time you enter an address in the web browser).
   We use it to setup a database connection that can be used throughout the request
 
@@ -88,8 +64,6 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
-
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
   """
@@ -105,73 +79,42 @@ def index():
 
   if not session.get('logged_in'):
     return render_template('index.html')
-
+  
   else:
-  # cursor = g.conn.execute("SELECT name FROM test")
-  # names = []
-  # for result in cursor:
-  #   names.append(result['name'])
-  # cursor.close()
     name = [session['name']]
     context = dict(username = name)
     return render_template("index.html", **context)
 
 #
 # This is an example of a different path.  You can see it at
-#
+# 
 #     localhost:8111/another
 #
 # notice that the functio name is another() rather than index()
 # the functions for each app.route needs to have different names
 #
-@app.route('/menu', methods=['GET'])
-def menu(shop=None):
-  shopid = request.args.get('shop')
-  shop_cursor = g.conn.execute("SELECT shopid, address FROM shop")
-  shops = []
-  for result in shop_cursor:
-    shops.append(result)
-  shop_cursor.close()
-
-  sql = 'SELECT itemname, price FROM menu, shop WHERE shop.shopid=menu.shopid and shop.shopid = (:id)'
-  menu_cursor = g.conn.execute(text(sql), id = shopid)
-  menu = []
-  for result in menu_cursor:
-    menu.append(result)
-  menu_cursor.close()
-
-  context = dict(shop_data = shops,
-                menu_data = menu)
-
-  return render_template("menu.html", **context)
-
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
   if request.method == 'GET':
 		return render_template("signin.html")
+
   else:
     email = request.form['email']
     password = request.form['password']
 
-    print email
-    print password
-
     try:
-      # sql = "SELECT * FROM customer WHERE customerid=(:id) and password=(:passw)"
-      # data = {'id': int(username), 'passw': password}
-
+	
       sql = "SELECT * FROM customer WHERE email=(:email) and password=(:passw)"
       data = {'email': email, 'passw': password}
       customer_cursor = g.conn.execute(text(sql), data)
 
       user = []
       for result in customer_cursor:
-        for info in result:
+        for info in result: 
           user.append(str(info))
       customer_cursor.close()
 
-      print user
       # If a customer logged in
       if user:
         session['logged_in'] = True
@@ -180,7 +123,6 @@ def signin():
         session['name'] = user[1]
         session['type'] = user[4]
 
-        print session['name']
         return redirect(url_for('index'))
 
       else:
@@ -190,11 +132,9 @@ def signin():
 
         user = []
         for result in staff_cursor:
-          for info in result:
+          for info in result: 
             user.append(str(info))
         staff_cursor.close()
-
-        print user
 
         #If a staff logged in
         if user:
@@ -206,14 +146,14 @@ def signin():
           return redirect(url_for('index'))
     except:
       return "WRONG PASSWORD"
-
+  
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
   if request.method == 'POST':
     max_id_sql = text('select max(customerid) from customer')
     max_id_cursor = g.conn.execute(max_id_sql)
     max_id = int(max_id_cursor.next()[0])
-
+  
     max_id_cursor.close()
 
     firstname = request.form['firstname']
@@ -242,15 +182,21 @@ def logout():
 
 @app.route('/activity')
 def activity():
-  sql = 'SELECT itemname, price FROM menu, shop WHERE shop.shopid=menu.shopid and shop.shopid = (:id)'
-  act_cursor = g.conn.execute(text(sql), id = shopid)
-  activity = []
-  for result in menu_cursor:
-    activity.append(act_cursor)
-  menu_cursor.close()
+  customerid = session["id"]
+  
+  sql = 'SELECT cast(orders.timestamp as date) as date, menu.itemname as itemname, menu.price as price, contain.quantity as quantity\
+          FROM orders left join contain on orders.orderid=contain.orderid \
+          left join menu on menu.shopid=contain.shopid and menu.itemid=contain.itemid\
+          WHERE orders.customerid = (:id)\
+          order by date'
 
-  context = dict(shop_data = shops,
-                menu_data = menu)
+  act_cursor = g.conn.execute(text(sql), id = customerid)
+  activity = []
+  for result in act_cursor:
+    activity.append(result)
+  act_cursor.close()
+
+  context = dict(act_data = activity)
 
   return render_template("activity.html", **context)
 
@@ -275,8 +221,6 @@ def profile():
   for row in dates_cursor:
     dates = row
 
-  print dates
-
   dates_cursor.close()
 
   food_sql = text("SELECT menu.itemname\
@@ -286,7 +230,7 @@ def profile():
                   GROUP BY contain.itemid, menu.itemname\
                   ORDER BY count(*) DESC\
                   LIMIT 1;")
-
+  
   food_cursor = g.conn.execute(food_sql, id = customerid)
 
   food = ""
@@ -305,7 +249,7 @@ def profile():
                       GROUP BY month) t2")
 
   pur_cursor = g.conn.execute(pur_sql, id = customerid)
-
+  
   purchase = 0
   for row in pur_cursor:
     if row[0]:
@@ -316,10 +260,107 @@ def profile():
   return render_template("profile.html", date_data = dates, fav_food_data = food, purchase_data = int(purchase))
 
 
+@app.route('/menu', methods=['GET', 'POST'])
+def menu(shop=None):
+  shopid = request.args.get('shop')
+  shop_cursor = g.conn.execute("SELECT shopid, address FROM shop")
+  shops = []
+  for result in shop_cursor:
+    shops.append(result)
+  shop_cursor.close()
 
-@app.route('/menu_staff')
+  sql = 'SELECT itemid, itemname, price FROM menu, shop WHERE shop.shopid=menu.shopid and shop.shopid = (:id)'
+  menu_cursor = g.conn.execute(text(sql), id = shopid)
+  menu = []
+  for result in menu_cursor:
+    menu.append(result)
+  menu_cursor.close()
+
+  context = dict(shop_data = shops,
+                menu_data = menu)
+
+  if request.method == 'POST':
+
+    max_id_sql = text('select max(orderid) from orders')
+    max_id_cursor = g.conn.execute(max_id_sql)
+    max_id = int(max_id_cursor.next()[0])+1
+    max_id_cursor.close()
+
+    print max_id
+
+    customerid = session["id"]
+    staffid = 9102000
+
+    order_sql = text("insert into Orders values ((:orderid), (:customerid), (:staffid), now())")
+    order_input = {"orderid": max_id, "customerid": customerid, "staffid": staffid}
+    order_cursor = g.conn.execute(order_sql, order_input)
+    order_cursor.close()
+
+    for item in menu:
+      form_name = str(item[0])
+      print form_name
+      if request.form[form_name] != "":
+        quantity = int(request.form[form_name])
+        print quantity
+        contain_sql = text("insert into Contain values((:orderid), (:shopid), (:itemid), (:quantity))")
+        
+        contain_input = {"orderid": max_id, "shopid": shopid, "itemid": form_name, "quantity": quantity}
+        contain_cursor = g.conn.execute(contain_sql, contain_input)
+        contain_cursor.close()
+
+  return render_template("menu.html", **context)
+
+
+
+@app.route('/menu_staff', methods=['GET', 'POST'])
 def menu_staff():
-  return render_template("menu_staff.html")
+  staffid = session["id"]
+  shop_sql = "SELECT shopid FROM staff WHERE staffid=(:id)"
+  shop_cursor = g.conn.execute(text(shop_sql), id = staffid)
+  shopid = str(shop_cursor.next()[0])
+  shop_cursor.close()
+
+  sql = 'SELECT distinct itemid, itemname, price\
+        FROM menu\
+        WHERE shopid=(:shopid)'
+
+  menu_cursor = g.conn.execute(text(sql), shopid = shopid)
+  menu = []
+  for result in menu_cursor:
+    menu.append(result)
+  menu_cursor.close()
+
+  context = dict(menu_data = menu, username = session["name"])
+
+  # Insert orders to database
+  if request.method == 'POST':
+
+    max_id_sql = text('select max(orderid) from orders')
+    max_id_cursor = g.conn.execute(max_id_sql)
+    max_id = int(max_id_cursor.next()[0])+1
+    max_id_cursor.close()
+
+    customerid = 2019000
+    staffid = session["id"]
+
+    order_sql = text("insert into Orders values ((:orderid), (:customerid), (:staffid), now())")
+    order_input = {"orderid": max_id, "customerid": customerid, "staffid": staffid}
+    order_cursor = g.conn.execute(order_sql, order_input)
+    order_cursor.close()
+
+    for item in menu:
+      form_name = str(item[0])
+      if request.form[form_name] != "":
+        quantity = str(request.form[form_name])
+
+        contain_sql = text("insert into Contain values((:orderid), (:shopid), (:itemid), (:quantity))")
+        
+        contain_input = {"orderid": max_id, "shopid": shopid, "itemid": form_name, "quantity": quantity}
+        contain_cursor = g.conn.execute(contain_sql, contain_input)
+        contain_cursor.close()
+
+  return render_template("menu_staff.html", **context)
+
 
 @app.route('/stock')
 def stock():
@@ -334,9 +375,10 @@ def stock():
   for result in stock_cursor:
     stock.append(result)
   stock_cursor.close()
-  context = dict(stock_data = stock)
+  # context = dict(stock_data = stock)
+  name = session['name']
 
-  return render_template("stock.html", **context)
+  return render_template("stock.html",  username = name, stock_data = stock)
 
 
 @app.route('/orders')
@@ -363,11 +405,11 @@ def orders():
     record.append(result)
   order_cursor.close()
 
-  name = [session['name']]
+  name = session['name']
 
-  context = dict(record = record, username = name)
+  # context = dict(record = record)
 
-  return render_template("orders.html", **context)
+  return render_template("orders.html", username = name, record = record)
 
 @app.route('/employee')
 def employee():
@@ -381,10 +423,11 @@ def employee():
   employee = []
   for result in emp_cursor:
     employee.append(result)
-
   emp_cursor.close()
-  context = dict(employee_data = employee)
-  return render_template("employee.html", **context)
+  
+  name = session['name']
+  # context = dict(employee_data = employee)
+  return render_template("employee.html", employee_data = employee, username=name)
 
 @app.route('/summary')
 def summary():
@@ -396,7 +439,6 @@ def summary():
 @app.route('/add', methods=['POST'])
 def add():
   name = request.form['name']
-  print name
   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
   g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
