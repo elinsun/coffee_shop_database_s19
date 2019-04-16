@@ -26,7 +26,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 app.secret_key = os.urandom(24)
 
 
-# XXX: The Database URI should be in the format of:
+# XXX: The Database URI should be in the format of: 
 #
 #     postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
 #
@@ -64,7 +64,7 @@ engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'
 @app.before_request
 def before_request():
   """
-  This function is run at the beginning of every web request
+  This function is run at the beginning of every web request 
   (every time you enter an address in the web browser).
   We use it to setup a database connection that can be used throughout the request
 
@@ -105,7 +105,7 @@ def index():
 
   if not session.get('logged_in'):
     return render_template('index.html')
-
+  
   else:
     name = [session['name']]
     context = dict(username = name)
@@ -128,7 +128,7 @@ def signin():
 
       user = []
       for result in customer_cursor:
-        for info in result:
+        for info in result: 
           user.append(str(info))
       customer_cursor.close()
 
@@ -150,7 +150,7 @@ def signin():
 
           user = []
           for result in staff_cursor:
-            for info in result:
+            for info in result: 
               user.append(str(info))
           staff_cursor.close()
 
@@ -185,27 +185,31 @@ def not_exist():
     return render_template('index.html')
   return render_template('not_exist.html')
 
-
+ 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
   if request.method == 'POST':
-    max_id_sql = text('select max(customerid) from customer')
-    max_id_cursor = g.conn.execute(max_id_sql)
-    max_id = int(max_id_cursor.next()[0])
+    try:
+      max_id_sql = text('select max(customerid) from customer')
+      max_id_cursor = g.conn.execute(max_id_sql)
+      max_id = int(max_id_cursor.next()[0])
+    
+      max_id_cursor.close()
 
-    max_id_cursor.close()
+      firstname = request.form['firstname']
+      lastname = request.form['lastname']
+      email = request.form['email']
+      password = request.form['password']
 
-    firstname = request.form['firstname']
-    lastname = request.form['lastname']
-    email = request.form['email']
-    password = request.form['password']
+      sql = text("insert into customer values((:id), (:fn), (:ln), (:email), 'bronze', (:password))")
+      data = {'id': max_id+1, 'fn': firstname, 'ln': lastname, 'email': email, 'password': password}
 
-    sql = text("insert into customer values((:id), (:fn), (:ln), (:email), 'bronze', (:password))")
-    data = {'id': max_id+1, 'fn': firstname, 'ln': lastname, 'email': email, 'password': password}
+      cursor = g.conn.execute(sql, data)
 
-    cursor = g.conn.execute(sql, data)
+      return render_template('signin.html')
+    except:
+      return "user already exists"
 
-    return render_template('signin.html')
   return render_template('signup.html')
 
 
@@ -225,7 +229,7 @@ def activity():
     return render_template('index.html')
 
   customerid = session["id"]
-
+  
   sql = 'SELECT cast(orders.timestamp as date) as date, menu.itemname as itemname, menu.price as price, contain.quantity as quantity\
           FROM orders left join contain on orders.orderid=contain.orderid \
           left join menu on menu.shopid=contain.shopid and menu.itemid=contain.itemid\
@@ -269,7 +273,7 @@ def profile():
                   GROUP BY contain.itemid, menu.itemname\
                   ORDER BY count(*) DESC\
                   LIMIT 1;")
-
+  
   food_cursor = g.conn.execute(food_sql, id = customerid)
 
   food = ""
@@ -288,7 +292,7 @@ def profile():
                       GROUP BY month) t2")
 
   pur_cursor = g.conn.execute(pur_sql, id = customerid)
-
+  
   purchase = 0
   for row in pur_cursor:
     if row[0]:
@@ -316,7 +320,7 @@ def profile():
     amount.append(result[1])
   hist_cursor.close()
 
-  return render_template("profile.html", date_data = dates, fav_food_data = food, purchase_data = purchase,
+  return render_template("profile.html", date_data = dates, fav_food_data = food, purchase_data = purchase, 
                                         amount_data = amount, month_data = month, username = session["name"])
 
 
@@ -353,7 +357,7 @@ def edit_menu():
 
     except:
       return redirect(url_for('edit_menu'))
-
+  
   sql = 'SELECT distinct itemid, itemname, price\
         FROM menu\
         WHERE shopid=(:shopid)'
@@ -416,7 +420,7 @@ def menu(shop=None):
         quantity = int(request.form[form_name])
         print quantity
         contain_sql = text("insert into Contain values((:orderid), (:shopid), (:itemid), (:quantity))")
-
+        
         contain_input = {"orderid": max_id, "shopid": shopid, "itemid": form_name, "quantity": quantity}
         contain_cursor = g.conn.execute(contain_sql, contain_input)
         contain_cursor.close()
@@ -488,7 +492,7 @@ def menu_staff():
         quantity = str(request.form[form_name])
 
         contain_sql = text("insert into Contain values((:orderid), (:shopid), (:itemid), (:quantity))")
-
+        
         contain_input = {"orderid": max_id, "shopid": shopid, "itemid": form_name, "quantity": quantity}
         contain_cursor = g.conn.execute(contain_sql, contain_input)
         contain_cursor.close()
@@ -564,6 +568,7 @@ def employee():
 
   return render_template("employee.html", employee_data = employee, username=session['name'])
 
+
 @app.route('/summary')
 def summary():
   if not session.get('logged_in'):
@@ -608,8 +613,6 @@ def summary():
 
   return render_template("summary.html", pur_month_data = month_pur, pur_amount_data = amount_pur,
                         rev_month_data = month_rev, rev_amount_data = amount_rev, username=session["name"])
-
-
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
