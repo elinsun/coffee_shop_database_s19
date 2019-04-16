@@ -11,6 +11,8 @@ EasyOrder is a web application designed for chain coffee shops to expedite the o
 
 
 ####
-	Linxiuzhi Yang (ly2465), Yilin Sun(ys2780)
+- Collaborators: Linxiuzhi Yang (ly2465), Yilin Sun(ys2780)
+
 ####
   URL http://34.73.16.9:8111/
+####
