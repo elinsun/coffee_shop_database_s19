@@ -57,7 +57,6 @@ orders = pd.concat([order, nyorder], axis=0).drop_duplicates().reset_index(drop=
 # upsample
 orders = orders.sample(n, replace=True).reset_index(drop=True)
 
-"""""""""""""""""""""""""""
 # generate random timestamp 
 i = 1
 timestamp = []
