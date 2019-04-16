@@ -13,7 +13,7 @@ EasyOrder is a web application designed for chain coffee shops to expedite the o
 Linxiuzhi Yang (ly2465), Yilin Sun(ys2780)
 
 #### Acknowledgement
-Huge thanks to Harry Potter, GOT and Disney characters from which we borrowed our synthetic customer/staff names.
+Big thanks to Harry Potter, GOT and Disney characters from which we borrowed our synthetic customer/staff names.
 
 #### URL 
 http://34.73.16.9:8111/
