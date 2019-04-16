@@ -1,4 +1,3 @@
-
 # SQL Schema to Create Tables
 
 # 1. Shop
