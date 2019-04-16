@@ -25,16 +25,40 @@ tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.secret_key = os.urandom(24)
 
-# The Database URI should be in the format of:
-# postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
 
+# XXX: The Database URI should be in the format of:
+#
+#     postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
+#
+# For example, if you had username ewu2493, password foobar, then the following line would be:
+#
+#     DATABASEURI = "postgresql://ewu2493:foobar@<IP_OF_POSTGRE_SQL_SERVER>/postgres"
+#
+# For your convenience, we already set it to the class database
+
+# Use the DB credentials you received by e-mail
 DB_USER = "ys2780"
 DB_PASSWORD = "px1YI73YHb"
+
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
+
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
 
+
+#
 # This line creates a database engine that knows how to connect to the URI above
+#
 engine = create_engine(DATABASEURI)
+
+
+# Here we create a test table and insert some values in it
+engine.execute("""DROP TABLE IF EXISTS test;""")
+engine.execute("""CREATE TABLE IF NOT EXISTS test (
+  id serial,
+  name text
+);""")
+engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+
 
 
 @app.before_request
@@ -86,7 +110,6 @@ def index():
     name = [session['name']]
     context = dict(username = name)
     return render_template("index.html", **context)
-
 
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -149,13 +172,11 @@ def signin():
   return render_template("signin.html")
 
 
-
 @app.route('/signin_warning')
 def warning():
   if not session.get('logged_in'):
     return render_template('index.html')
   return render_template('signin_warning.html')
-
 
 
 @app.route('/not_exist')
@@ -165,31 +186,26 @@ def not_exist():
   return render_template('not_exist.html')
 
 
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
   if request.method == 'POST':
-    try:
-      max_id_sql = text('select max(customerid) from customer')
-      max_id_cursor = g.conn.execute(max_id_sql)
-      max_id = int(max_id_cursor.next()[0])
+    max_id_sql = text('select max(customerid) from customer')
+    max_id_cursor = g.conn.execute(max_id_sql)
+    max_id = int(max_id_cursor.next()[0])
 
-      max_id_cursor.close()
+    max_id_cursor.close()
 
-      firstname = request.form['firstname']
-      lastname = request.form['lastname']
-      email = request.form['email']
-      password = request.form['password']
+    firstname = request.form['firstname']
+    lastname = request.form['lastname']
+    email = request.form['email']
+    password = request.form['password']
 
-      sql = text("insert into customer values((:id), (:fn), (:ln), (:email), 'bronze', (:password))")
-      data = {'id': max_id+1, 'fn': firstname, 'ln': lastname, 'email': email, 'password': password}
+    sql = text("insert into customer values((:id), (:fn), (:ln), (:email), 'bronze', (:password))")
+    data = {'id': max_id+1, 'fn': firstname, 'ln': lastname, 'email': email, 'password': password}
 
-      cursor = g.conn.execute(sql, data)
+    cursor = g.conn.execute(sql, data)
 
-      return render_template('signin.html')
-    except:
-      return "user already exists"
-
+    return render_template('signin.html')
   return render_template('signup.html')
 
 
@@ -201,7 +217,6 @@ def logout():
   session.pop("name")
   session.pop("type")
   return redirect(url_for('index'))
-
 
 
 @app.route('/activity')
@@ -224,7 +239,6 @@ def activity():
   act_cursor.close()
 
   return render_template("activity.html", act_data = activity, username=session["name"])
-
 
 
 @app.route('/profile')
@@ -304,7 +318,6 @@ def profile():
 
   return render_template("profile.html", date_data = dates, fav_food_data = food, purchase_data = purchase,
                                         amount_data = amount, month_data = month, username = session["name"])
-
 
 
 @app.route('/edit_menu', methods=['GET', 'POST'])
@@ -483,7 +496,6 @@ def menu_staff():
   return render_template("menu_staff.html", **context)
 
 
-
 @app.route('/stock')
 def stock():
   if not session.get('logged_in'):
@@ -535,8 +547,6 @@ def orders():
 
   return render_template("orders.html", username = name, record = record)
 
-
-
 @app.route('/employee')
 def employee():
   if not session.get('logged_in'):
@@ -586,7 +596,7 @@ def summary():
                               left join menu on menu.shopid=contain.shopid and menu.itemid=contain.itemid\
                   WHERE contain.shopid = (SELECT shopid FROM Staff WHERE staffid = (:id))\
                   ORDER BY month) t\
-              ORDER BY year_month;")\
+               ORDER BY year_month;")\
 
   rev_cursor = g.conn.execute(sql_revenue, id = session["id"])
   month_rev = []
@@ -608,9 +618,6 @@ def add():
   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
   g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
-
-
-
 
 if __name__ == "__main__":
   import click
