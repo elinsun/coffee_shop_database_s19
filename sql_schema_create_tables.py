@@ -5,7 +5,7 @@
 drop table if exists Shop CASCADE;
 
 create table Shop(
-    shopid text primary key, -- int
+    shopid text primary key,
     state text not null,
     city text not null,
     address text not null,
