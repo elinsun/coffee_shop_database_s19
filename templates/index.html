@@ -40,25 +40,36 @@
 
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="/menu">Menu</a>
-      </li>
+      {% if session['user'] == 'customer' or not session['logged_in'] %}
+        <li class="nav-item active">
+            <a class="nav-link" href="/menu">Menu</a>
+        </li>
+      {% endif %}
       {% if session['user'] == 'customer' %}
       <li class="nav-item active">
           <a class="nav-link" href="/profile">Profile<span class="sr-only"></span></a>
       </li>
+      <li class="nav-item active">
+          <a class="nav-link" href="/activity">Activity</a><span class="sr-only"></span></a>
+      </li>
       {% endif %}
       {% if session['user'] == 'staff' %}
+      <li class="nav-item active">
+          <a class="nav-link" href="/menu_staff">Place Orders</a>
+      </li>
       <li class="nav-item active">
           <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
       </li>
       <li class="nav-item active">
-          <a class="nav-link" href="/orders">Orders<span class="sr-only"></span></a>
+          <a class="nav-link" href="/orders">Order History<span class="sr-only"></span></a>
       </li>
       {% endif %}
       {% if session['type'] == 'store manager' %}
       <li class="nav-item active">
-          <a class="nav-link" href="/employee">Employee<span class="sr-only"></span></a>
+          <a class="nav-link" href="/edit_menu">Edit Menu<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item active">
+          <a class="nav-link" href="/employee">Employee List<span class="sr-only"></span></a>
       </li>
       <li class="nav-item active">
           <a class="nav-link" href="/summary">Summary<span class="sr-only"></span></a>
@@ -71,7 +82,7 @@
     </li>
     {% else %}
     {% for n in username%}
-      <a class="navbar-brand">Hi, {{n}}</a>
+      <a class="navbar-brand" href="#">Hi, {{n}}</a>
     {% endfor %}
     <li class="log_out"></li>
       <a href="/logout">Logout</a> 

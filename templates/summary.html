@@ -36,59 +36,118 @@
       }
     </style>
     <!-- Custom styles for this template -->
+    <script>
+        var dps = [];
+        var amount = JSON.parse('{{pur_amount_data|tojson}}');
+        var month = JSON.parse('{{pur_month_data|tojson}}');
+        console.log(month);
+        var rev_dps = [];
+        var rev_amount = JSON.parse('{{rev_amount_data|tojson}}');
+        var rev_month = JSON.parse('{{rev_month_data|tojson}}');
+
+
+        for (var i = 0, size = amount.length; i < size ; i++){
+          var arr = month[i].split("-");
+          dps.push({x: new Date(arr[0], arr[1]), y: amount[i]});
+        }
+
+        for (var i = 0, size = rev_amount.length; i < size ; i++){
+          var arr = rev_month[i].split("-");
+          rev_dps.push({x: new Date(arr[0], arr[1]), y: rev_amount[i]});
+        }
+
+        window.onload = function () {
+          var cost_chart = new CanvasJS.Chart("cost_chart", {
+            animationEnabled: true,
+            theme: "light2",
+            title:{
+              text: "Monthly Cost Line Chart"
+            },
+            axisY:{
+              includeZero: false
+            },
+            data: [{        
+              type: "line",       
+              dataPoints: dps
+            }]
+          });
+          cost_chart.render();
+
+          var revenue_chart = new CanvasJS.Chart("revenue_chart", {
+            animationEnabled: true,
+            theme: "light2",
+            title:{
+              text: "Monthly Revenue Line Chart"
+            },
+            axisY:{
+              includeZero: false
+            },
+            data: [{        
+              type: "line",       
+              dataPoints: rev_dps
+            }]
+          });
+          revenue_chart.render();
+        }
+      </script>
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark navbar-default navbar-static-top">
-  <a class="navbar-brand" href="#">Cup o' Coffee</a>
+  <a class="navbar-brand" href="/">Cup o' Coffee</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="/menu_staff">Menu <span class="sr-only"></span></a>
-        </li>
-        <li class="nav-item active">
-            <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
-        </li>
-        <li class="nav-item active">
-            <a class="nav-link" href="/orders">Orders<span class="sr-only"></span></a>
-        </li>
-        <li class="nav-item active">
-            <a class="nav-link" href="/employee">Employee<span class="sr-only"></span></a>
-        </li>
-        <li class="nav-item active">
-            <a class="nav-link" href="/summary">Summary<span class="sr-only">(current)</span></a>
-        </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/menu_staff">Place Orders</a>
+          </li>
+          <li class="nav-item active">
+              <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item active">
+              <a class="nav-link" href="/orders">Order History<span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item active">
+              <a class="nav-link" href="/edit_menu">Edit Menu<span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item active">
+              <a class="nav-link" href="/employee">Employee List<span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item active">
+              <a class="nav-link" href="/summary">Summary<span class="sr-only"></span></a>
+          </li>
       </ul>
+      {% if not session['logged_in'] %}
+      <li class="sign_in">
+        <a class="sign_in" href="/signin">Sign In</a>
+      </li>
+      {% else %}
+      <a class="navbar-brand" href="#">Hi, {{username}}</a>
+      <li class="log_out"></li>
+        <a href="/logout">Logout</a> 
+      </li>
+      {% endif %}
     </div>
 </nav>
 
 
 <main role="main" class="container">
 
-    <div class="row">
-
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Restaurant A Menu</h1>
-            <!-- <div class="btn-toolbar mb-2 mb-md-0">
-              <div class="btn-group mr-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-              </div>
-              <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-              </button> -->
-            </div>
-          </div>
-    
-          <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-    
-        </main>
+    <div class="row"></div>
+    <main role="main" class="col-md-10 ml-sm-auto col-lg-auto px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Summary</h1>
       </div>
+
+      <div id="cost_chart" style="height: 400px; width: 100%;"></div>
+      <p>  </p>
+      <div id="revenue_chart" style="height: 400px; width: 100%;"></div>
+    </main>
+
 </main>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

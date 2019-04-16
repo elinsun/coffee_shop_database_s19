@@ -47,70 +47,87 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Menu <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="#">Menu <span class="sr-only"></span></a>
       </li>
+      {% if session['logged_in'] %}
       <li class="nav-item active">
           <a class="nav-link" href="/profile">Profile<span class="sr-only"></span></a>
       </li>
+      <li class="nav-item active">
+          <a class="nav-link" href="/activity">Activity</a><span class="sr-only"></span></a>
+      </li>
+      {% endif %}
     </ul>
+    {% if not session['logged_in'] %}
+    <li class="sign_in">
+      <a class="sign_in" href="/signin">Sign In</a>
+    </li>
+    {% else %}
+    {% for n in username%}
+      <a class="navbar-brand" href="#">Hi, {{n}}</a>
+    {% endfor %}
+    <li class="log_out"></li>
+      <a href="/logout">Logout</a> 
+    </li>
+    {% endif %}
   </div>
 </nav>
 
 
-<main role="main" class="container">
+  <main class="container-fluid">
     <div class="row">
-
         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-          <div class="sidebar-sticky">
-            <ul class="nav flex-column">
+          <ul class="nav flex-column">
               {% for shop in shop_data %}
                 <li class="nav-item">
-                  <a class="nav-link" href={{"/menu?shop="+shop.shopid}} onclick={{"showMenu("+shop.shopid+")"}}>
+                  <a class="nav-link" href={{"/menu?shop="+shop.shopid}}>
                     {{shop.address}}
                   </a>
                 </li>
               {% endfor %}
-            </ul>
-          </div>
+          </ul>
         </nav>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-          
-          <h1 class="h2">Menu</h1>
+
+        <main role="main" class="col-md-8 ml-sm-8 col-lg-8 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Menu</h1>
+          </div>
+
           <div class="table-responsive">
               <table class="table table-striped table-sm" id="menu">
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Price</th>
-                    <th>Quantity</th>>
+                    {% if session['logged_in'] %}
+                      <th>Quantity</th>
+                    {% endif %}
                   </tr>
                   <tbody>
                       <form action="/menu" method="POST">
                       {% for item in menu_data %}
+                      {% if item.id != 100 %}
                       <tr>
                         <td>{{item.itemname}}</td>
-                        <td>{{item.price}}</td>  
-                        <td> <input type="number" name={{item.itemid}} min="1" max="50"> </td>
+                        <td>{{item.price}}</td>
+                        {% if session['logged_in'] %}
+                          <td> <input type="number" name={{item.itemid}} min="1" max="50"> </td>
+                        {% endif %}
                       </tr>
+                      {% endif %}
                       {% endfor %}
-                      <input type="submit" value="order">
+                      {% if session['logged_in'] %}
+                        <input type="submit" value="   Order   " class="btn btn-primary">
+                      {% endif %}
                       </form>
-                    </tbody>
+                  </tbody>
                 </thead>
               </table>
             </div>
-
         </main>
       </div>
   </main>
-</body>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script>
-function showMenu(shop=None){
-  console.log(shop);
-  document.getElementById("menu").style.display="block";
-}
-</script>
 </html>

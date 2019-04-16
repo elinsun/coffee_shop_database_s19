@@ -36,10 +36,41 @@
       }
     </style>
     <!-- Custom styles for this template -->
+    <script>
+        var dps = [];
+        var amount = JSON.parse('{{amount_data|tojson}}');
+        var month = JSON.parse('{{month_data|tojson}}');
+        console.log(month);
+
+        for (var i = 0, size = amount.length; i < size ; i++){
+          var arr = month[i].split("-");
+          dps.push({x: new Date(arr[0], arr[1]), y: amount[i]});
+        }
+
+        window.onload = function () {
+          var chart = new CanvasJS.Chart("hist_chart", {
+            animationEnabled: true,
+            theme: "light2",
+            title:{
+              text: "Monthly Consumption"
+            },
+            axisY:{
+              includeZero: false
+            },
+            data: [{        
+              type: "line",       
+              dataPoints: dps
+            }]
+          });
+          chart.render();
+        }
+      </script>
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark navbar-default navbar-static-top">
-  <a class="navbar-brand" href="#">Cup o' Coffee</a>
+  <a class="navbar-brand" href="/">Cup o' Coffee</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -50,58 +81,51 @@
         <a class="nav-link" href="/menu">Menu<span class="sr-only"></span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#">Profile<span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="#">Profile<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item active">
+          <a class="nav-link" href="/activity">Activity</a><span class="sr-only"></span></a>
       </li>
     </ul>
+    {% if not session['logged_in'] %}
+    <li class="sign_in">
+      <a class="sign_in" href="/signin">Sign In</a>
+    </li>
+    {% else %}
+    <a class="navbar-brand" href="#">Hi, {{username}}</a>
+    <li class="log_out"></li>
+      <a href="/logout">Logout</a> 
+    </li>
+    {% endif %}
   </div>
 </nav>
 
 
-<main role="main" class="container">
+  <main role="main" class="container">
 
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <main role="main" class="col-md-10 ml-sm-auto col-lg-auto px-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Hi, ...</h1>
+        <h1 class="h2">Hi, {{username}}</h1>
       </div>
 
-      <h1 class="h3">
+      <h1 class="h2">
           You have been with us for {{date_data}} day(s).
       </h1>
 
       {% if fav_food_data != "" %}
-      <h1 class="h3">
+      <p>
           You favorite drink/food is {{fav_food_data}}.
-      </h1>
+      </p>
       {% endif %}
 
-      <h1 class="h3">
+      <p>
           On average, you makes {{purchase_data}} purchase(s) per month.
-      </h1>
+      </p>
 
     </main>
 
-    <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-          <div class="sidebar-sticky">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link active" href="/activity">
-                  <span data-feather="home"></span>
-                  Activity
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/rewards">
-                  <span data-feather="file"></span>
-                  Rewards<span class="sr-only">(current)</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-  
-      </div>
-</main>
+    <div id="hist_chart" style="height: 400px; width: 100%;"></div>
+  </main>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

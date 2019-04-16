@@ -47,7 +47,7 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
       <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Place Orders</a>
+            <a class="nav-link" href="/menu_staff">Place Orders</a>
           </li>
           <li class="nav-item active">
               <a class="nav-link" href="/stock">Stock<span class="sr-only"></span></a>
@@ -57,7 +57,7 @@
           </li>
           {% if session['type'] == 'store manager' %}
           <li class="nav-item active">
-              <a class="nav-link" href="/edit_menu">Edit Menu<span class="sr-only"></span></a>
+              <a class="nav-link" href="#">Edit Menu<span class="sr-only"></span></a>
           </li>
           <li class="nav-item active">
               <a class="nav-link" href="/employee">Employee List<span class="sr-only"></span></a>
@@ -93,22 +93,32 @@
                 <tr>
                   <th>Name</th>
                   <th>Price</th>
-                  <th>Quantity</th>
+                  <th>Add</th>
                 </tr>
               <tbody>
-              <form action="/menu_staff" method="POST">
               {% for item in menu_data %}
                 <tr>
                   <td>{{item.itemname}}</td>
-                  <td>{{item.price}}</td>  
-                  <td> <input type="number" name={{item.itemid}} min="1" max="50"> </td>
+                  <td>{{item.price}}</td>
+                  <td> </td>  
                 </tr>
               {% endfor %}
-              <div class="wrap-input100">
-                  <input class="input100" type="input_email" name="input_email" class="form-control" placeholder="customer email">
-              </div>
-
-              <input type="submit" value="   Order   " class="btn btn-primary">
+              <form action="/edit_menu" method="POST">
+                <tr>
+                    <td>
+                      <div class="wrap-input100">
+                          <input class="input100" type="input_itemname" name="input_itemname" class="form-control" placeholder="item name" required>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="wrap-input100">
+                          <input class="input100" type="input_price" name="input_price" class="form-control" placeholder="price" required>
+                      </div>
+            
+                    <td>
+                      <input type="submit" value="Add" class="btn btn-primary">
+                    </td>  
+                </tr>
               </form>
               </tbody>
               </thead>
