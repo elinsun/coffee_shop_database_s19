@@ -4,10 +4,9 @@
 #### Project Description
 EasyOrder is a web application designed for chain coffee shops to expedite the order management, bookkeeping and record maintaining. 
 - Users include customers and staffs of the coffee shop. 
-- Customers are able to not only make food/drink orders but also track past purchases and review order summary by registering a personal account. 
-- Customer will get rewards as they purchase. Once logging in, they can browse the designated menu for each coffee shop and make their orders. 
+- Customers are able to not only make food/drink orders but also track past purchases and review order summary by registering a personal account. Customer will get rewards as they purchase. Once logging in, they can browse the designated menu for each coffee shop and make their orders. 
 - Each order must contain at least one item from the menu. 
-- Staffs of different branches are given different authorization to the data and information stored by EasyOrder based on their positions. Servers are able to view the details about new orders. Managers are given access to edit and customize the menu for their own stores. They can retrieve also the inventory stock and transaction record for bookkeeping purpose. 
+- Staffs of different branches are given different authorization to the data and information stored by EasyOrder based on their positions. Servers are able to view the details about new orders. Store managers are given access to edit and customize the menu for their own stores. They can retrieve also the inventory stock and transaction record for bookkeeping purpose. 
 - Data are made up for this project but in reality, data will be based on real transaction and other managerial activities.
 
 #### Collaborators
